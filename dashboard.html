@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرصد مؤشرات مكافحة الفساد — هيئة مكافحة الفساد الفلسطينية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Top Header Bar -->
+    <header class="top-header">
+        <div class="header-content">
+            <div class="header-right">
+                <div class="shield-badge">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div class="header-titles">
+                    <h1>هيئة مكافحة الفساد الفلسطينية</h1>
+                    <p>الملخص السنوي لمؤشرات الأداء</p>
+                </div>
+            </div>
+            <div class="header-left">
+                <div class="last-update">
+                    <i class="bi bi-clock-history"></i>
+                    <span>آخر تحديث: <strong id="lastUpdate"></strong></span>
+                </div>
+                <button class="logout-btn" onclick="logout()" title="تسجيل الخروج">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chief-notice">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>هذا العرض مخصص لرئيس الهيئة — يظهر الملخص فقط بدون تفاصيل السجلات</span>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <!-- Year Filter -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="bi bi-calendar3"></i> تصفية حسب السنة</label>
+                <div class="year-buttons" id="yearButtons">
+                    <button class="year-btn active" data-year="all">الكل</button>
+                    <button class="year-btn" data-year="2025">2025</button>
+                    <button class="year-btn" data-year="2024">2024</button>
+                    <button class="year-btn" data-year="2023">2023</button>
+                    <button class="year-btn" data-year="2022">2022</button>
+                </div>
+            </div>
+            <div class="filter-stats" id="filterStats"></div>
+        </div>
+
+        <!-- KPI Cards -->
+        <section class="kpi-section">
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-primary" id="kpiTotal">
+                    <div class="kpi-icon"><i class="bi bi-bar-chart-line"></i></div>
+                    <div class="kpi-info-wrapper">
+                        <span class="kpi-value" id="kpiTotalValue">51</span>
+                        <span class="kpi-label">إجمالي المؤشرات</span>
+                    </div>
+                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
+                </div>
+                <div class="kpi-card kpi-success" id="kpiAvailable">
+                    <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+                    <div class="kpi-info-wrapper">
+                        <span class="kpi-value" id="kpiAvailableValue">41</span>
+                        <span class="kpi-label">مؤشرات متوفرة</span>
+                    </div>
+                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
+                </div>
+                <div class="kpi-card kpi-blue" id="kpiCategories">
+                    <div class="kpi-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+                    <div class="kpi-info-wrapper">
+                        <span class="kpi-value" id="kpiCategoriesValue">9</span>
+                        <span class="kpi-label">فئات المؤشرات</span>
+                    </div>
+                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
+                </div>
+                <div class="kpi-card kpi-warning" id="kpiConflicts">
+                    <div class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                    <div class="kpi-info-wrapper">
+                        <span class="kpi-value" id="kpiConflictsValue">0</span>
+                        <span class="kpi-label">تعارضات غير محلولة</span>
+                    </div>
+                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Grid -->
+        <section class="categories-section">
+            <div class="section-header">
+                <h2><i class="bi bi-grid-3x3-gap"></i> فئات المؤشرات</h2>
+            </div>
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+
+        <!-- Bottom Notice -->
+        <div class="bottom-notice">
+            <i class="bi bi-exclamation-diamond-fill"></i>
+            <span>هذا العرض مخصص لرئيس الهيئة — يظهر الملخص فقط بدون تفاصيل السجلات</span>
+            <span class="demo-badge">نسخة تجريبية</span>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle"></h3>
+                <button class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
