@@ -434,9 +434,9 @@ function renderModalChart(ind, firstYear, lastYear, firstValue, lastValue, color
                     }
                 }
             }
-        });
+});
     } catch (e) {
-        console.error('Chart error:', e);
+        console.error('خطأ في الرسم البياني:', e);
     }
 }
 

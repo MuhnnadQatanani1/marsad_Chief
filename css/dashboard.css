@@ -729,6 +729,95 @@ body {
     background: rgba(26, 35, 126, 0.03);
 }
 
+/* ===== MODAL CHART SECTION ===== */
+.chart-section {
+    margin-top: 24px;
+}
+
+.chart-section-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.chart-section-title i {
+    font-size: 1rem;
+}
+
+.trend-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.trend-summary span:first-child {
+    display: flex;
+    align-items: center;
+}
+
+.yearly-section {
+    margin-top: 24px;
+}
+
+.yearly-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.yearly-table th {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.yearly-table td {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    color: var(--text);
+}
+
+.yearly-table tr:hover td {
+    background: rgba(26, 35, 126, 0.03);
+}
+
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll .modal-detail-table {
+    margin-top: 12px;
+}
+
+.table-scroll .modal-detail-table th,
+.table-scroll .modal-detail-table td {
+    white-space: nowrap;
+}
+
+.detail-section {
+    margin-top: 24px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1200px) {
     .kpi-grid {
