@@ -324,26 +324,12 @@ function openIndicatorDetail(indicatorId) {
 
     // ── جدول التفاصيل (إن وُجد) ──
     if (ind.detail) {
-        html += `
-        <div class="detail-section">
-            <div class="chart-section-title">
-                <i class="bi bi-table" style="color:var(--primary)"></i>
-                التفاصيل
-            </div>
-            <div class="table-scroll">
-            <table class="modal-detail-table">
-                <thead><tr>${ind.detail.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead>
-                <tbody>
-                    ${Object.entries(ind.detail.rows).map(([label, values]) => `
-                        <tr>
-                            <td style="font-weight:700;text-align:right;white-space:nowrap">${label}</td>
-                            ${values.map(v => `<td>${formatNumber(v)}</td>`).join('')}
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-            </div>
-        </div>`;
+        html += renderDetailTable(ind.detail);
+    }
+
+    // ── جدول التفاصيل الإضافية (إن وُجد) ──
+    if (ind.detail2) {
+        html += renderDetailTable(ind.detail2);
     }
 
     body.innerHTML = html;
@@ -358,6 +344,30 @@ function infoCard(label, value, color) {
     <div class="modal-info-card">
         <span class="info-label">${label}</span>
         <span class="info-value" style="color:${color}">${value}</span>
+    </div>`;
+}
+
+function renderDetailTable(detail) {
+    const title = detail.title || detail.columns[0] || 'التفاصيل';
+    return `
+    <div class="detail-section">
+        <div class="chart-section-title">
+            <i class="bi bi-table" style="color:var(--primary)"></i>
+            ${title}
+        </div>
+        <div class="table-scroll">
+        <table class="modal-detail-table">
+            <thead><tr>${detail.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead>
+            <tbody>
+                ${Object.entries(detail.rows).map(([label, values]) => `
+                    <tr>
+                        <td style="font-weight:700;text-align:right;white-space:nowrap">${label}</td>
+                        ${values.map(v => `<td>${formatNumber(v)}</td>`).join('')}
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        </div>
     </div>`;
 }
 
@@ -476,7 +486,9 @@ function updateFilterStats() {
     const stats = document.getElementById('filterStats');
     const active = INDICATORS.filter(i => !i.inactive);
     if (selectedYear === 'all') {
-        stats.textContent = `عرض جميع البيانات — ${active.length} مؤشر نشط`;
+        const perYear = {};
+        [2022, 2023, 2024, 2025].forEach(y => perYear[y] = active.filter(i => i.yearly[y]).length);
+        stats.textContent = `جميع البيانات — ${perYear[2025]} مؤشراً لعام 2025، و${perYear[2022]} مؤشراً لكل سنة من 2022 إلى 2024`;
     } else {
         const filtered = active.filter(i => i.yearly[selectedYear]);
         stats.textContent = `بيانات سنة ${selectedYear} — ${filtered.length} مؤشر متاح`;
