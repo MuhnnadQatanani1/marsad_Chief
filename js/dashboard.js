@@ -98,6 +98,32 @@ function getSignal(ind) {
 }
 
 // ─────────────────────────────────────────────
+// ملاحظات الإشارة لكل مؤشر
+// ─────────────────────────────────────────────
+const SIGNAL_NOTES = {
+    'IND-10': 'تراجع كبير في عدد الإقرارات الموزعة — يقتضي مراجعة قاعدة المكلفين وآلية التوزيع.',
+    'IND-17': 'ارتفاع ملفات محولة لعدم تشكيل جريمة فساد — يقتضي مراجعة آليات الفرز والتكييف الأولي.',
+    'IND-27': 'انخفاض الإقرارات الدورية — قد يدل على تراجع في الامتثال أو تأخر في عملية التجديد.',
+    'IND-30': 'انخفاض أرقام الرصد — قد يدل على تراجع في نشاط دائرة الرصد أو تغيّر في معايير التصنيف.',
+    'IND-02': 'نشاط ملحوظ في إحالة الملفات للنائب العام — يدل على فاعلية التحقيق.',
+    'IND-04': 'استمرارية إنجاز الملفات بكفاءة — نسبة إنجاز مرتفعة.',
+    'IND-06': 'نسبة إنجاز ملفات التحقيق الجزئي مرتفعة — جودة في الإنجاز.',
+    'IND-07': 'استمرار إحالة المتهمين للمحكمة — مسار قانوني سليم.',
+    'IND-08': 'زيادة القضايا المفصولة — تقدم في إصدار الأحكام.',
+    'IND-09': 'استمرار صدور أحكام إدانة — ردع ومحاسبة.',
+    'IND-11': 'نسبة الإقرارات المستوفاة مرتفعة — التزام جيد من المكلفين.',
+    'IND-12': 'زيادة عدد الإقرارات المفحوصة — رقابة أقوى.',
+    'IND-13': 'تراجع في طلبات التظلم — ثقة في قرارات الحماية.',
+    'IND-16': 'استمرار جودة إنجاز القرارات — نسبة الحفظ مسيطرة.',
+    'IND-24': 'زيادة القضايا المحالة للمحكمة — تفعيل المسار القضائي.',
+    'IND-26': 'استمرار تغطية الجهات المكلفة بالإقرار.',
+    'IND-28': 'استمرار التراكم — قاعدة الإقرارات توسعها.',
+    'IND-29': 'استمرار إعداد التقارير التدقيقية — رقابة مالية مستمرة.',
+};
+
+let activeSummary = null;
+
+// ─────────────────────────────────────────────
 // تسجيل الخروج والتاريخ
 // ─────────────────────────────────────────────
 function logout() {
@@ -499,6 +525,9 @@ function initYearFilter() {
             buttons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             selectedYear = this.dataset.year === 'all' ? 'all' : parseInt(this.dataset.year);
+            const panel = document.getElementById('summaryPanel');
+            if (panel) panel.classList.remove('open');
+            activeSummary = null;
             refreshDashboard();
         });
     });
@@ -531,6 +560,49 @@ function scrollToCategories() {
 }
 
 // ─────────────────────────────────────────────
+// ملخص الإشارات (عرض المؤشرات حسب اللون)
+// ─────────────────────────────────────────────
+function showSummary(level) {
+    const panel   = document.getElementById('summaryPanel');
+    const content = document.getElementById('summaryContent');
+    if (!panel || !content) return;
+
+    if (activeSummary === level) {
+        panel.classList.remove('open');
+        activeSummary = null;
+        return;
+    }
+    activeSummary = level;
+
+    const labels = { red: 'يتطلب قراراً', amber: 'يحتاج متابعة', green: 'أداء جيد أو مستقر' };
+    const active = INDICATORS.filter(i => !i.inactive);
+    const items  = active.filter(i => getSignal(i).level === level);
+    const change = getChange;
+
+    let html = `<div class="summary-header"><span class="signal-badge signal-${level}">${labels[level]}</span><span class="summary-count">${items.length} مؤشر</span></div>`;
+    html += `<div class="summary-list">`;
+    items.forEach(ind => {
+        const value = getIndicatorValueForYear(ind, selectedYear);
+        const c = change(ind);
+        const valText = (value !== undefined && value !== null) ? `${formatNumber(value)} ${ind.unit}` : 'غير متوفر';
+        const cat = CATEGORIES.find(c => c.id === ind.category);
+        const note = SIGNAL_NOTES[ind.id] || '';
+        html += `<div class="summary-item summary-${level}">
+            <div class="summary-item-top">
+                <span class="indicator-code" style="font-size:0.72rem">${ind.id}</span>
+                <span class="summary-item-name">${ind.name}</span>
+                <span class="summary-item-value">${valText}</span>
+            </div>
+            ${note ? `<div class="summary-item-note"><i class="bi bi-lightbulb"></i> ${note}</div>` : ''}
+        </div>`;
+    });
+    html += `</div>`;
+    content.innerHTML = html;
+    panel.classList.add('open');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─────────────────────────────────────────────
 // التهيئة عند تحميل الصفحة
 // ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -543,6 +615,10 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshDashboard();
 
     ['kpiTotal', 'kpiGreen', 'kpiAmber', 'kpiRed'].forEach(id => {
-        document.getElementById(id)?.addEventListener('click', scrollToCategories);
+        document.getElementById(id)?.addEventListener('click', function () {
+            if (id === 'kpiTotal') { scrollToCategories(); return; }
+            const level = id === 'kpiGreen' ? 'green' : id === 'kpiAmber' ? 'amber' : 'red';
+            showSummary(level);
+        });
     });
 });
