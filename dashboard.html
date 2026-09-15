@@ -55,40 +55,44 @@
             <div class="filter-stats" id="filterStats"></div>
         </div>
 
+        <!-- Signal Legend -->
+        <div class="signal-legend">
+            <span class="signal-legend-item"><span class="signal-dot signal-green"></span> أداء جيد أو مستقر</span>
+            <span class="signal-legend-item"><span class="signal-dot signal-amber"></span> يحتاج متابعة</span>
+            <span class="signal-legend-item"><span class="signal-dot signal-red"></span> يتطلب قراراً</span>
+            <span class="signal-legend-item"><span class="signal-dot signal-gray"></span> معلوماتي</span>
+        </div>
+
         <!-- KPI Cards -->
         <section class="kpi-section">
             <div class="kpi-grid">
                 <div class="kpi-card kpi-primary" id="kpiTotal">
-                    <div class="kpi-icon"><i class="bi bi-bar-chart-line"></i></div>
+                    <div class="kpi-icon"><i class="bi bi-clipboard-data"></i></div>
                     <div class="kpi-info-wrapper">
                         <span class="kpi-value" id="kpiTotalValue">0</span>
                         <span class="kpi-label">إجمالي المؤشرات</span>
                     </div>
-                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
                 </div>
-                <div class="kpi-card kpi-success" id="kpiAvailable">
-                    <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+                <div class="kpi-card kpi-success" id="kpiGreen">
+                    <div class="kpi-icon"><i class="bi bi-check-circle-fill"></i></div>
                     <div class="kpi-info-wrapper">
-                        <span class="kpi-value" id="kpiAvailableValue">0</span>
-                        <span class="kpi-label">مؤشرات متوفرة</span>
+                        <span class="kpi-value" id="kpiGreenValue">0</span>
+                        <span class="kpi-label">أداء جيد أو مستقر</span>
                     </div>
-                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
                 </div>
-                <div class="kpi-card kpi-blue" id="kpiCategories">
-                    <div class="kpi-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+                <div class="kpi-card kpi-warning" id="kpiAmber">
+                    <div class="kpi-icon"><i class="bi bi-exclamation-circle"></i></div>
                     <div class="kpi-info-wrapper">
-                        <span class="kpi-value" id="kpiCategoriesValue">0</span>
-                        <span class="kpi-label">فئات المؤشرات</span>
+                        <span class="kpi-value" id="kpiAmberValue">0</span>
+                        <span class="kpi-label">يحتاج متابعة</span>
                     </div>
-                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
                 </div>
-                <div class="kpi-card kpi-warning" id="kpiConflicts">
-                    <div class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="kpi-card kpi-danger" id="kpiRed">
+                    <div class="kpi-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
                     <div class="kpi-info-wrapper">
-                        <span class="kpi-value" id="kpiConflictsValue">0</span>
-                        <span class="kpi-label">تعارضات غير محلولة</span>
+                        <span class="kpi-value" id="kpiRedValue">0</span>
+                        <span class="kpi-label">يتطلب قراراً</span>
                     </div>
-                    <div class="kpi-arrow"><i class="bi bi-arrow-left-circle"></i></div>
                 </div>
             </div>
         </section>

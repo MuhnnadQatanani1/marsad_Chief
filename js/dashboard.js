@@ -62,6 +62,42 @@ function getIndicatorValueForYear(indicator, year) {
 }
 
 // ─────────────────────────────────────────────
+// قواعد الإشارة (الإشارات المرجانية)
+// ─────────────────────────────────────────────
+const SIGNAL_DEFAULTS = { better: 'up', green: 10, amber: 25 };
+const SIGNAL_RULES = {
+    'IND-01': { better: 'up' },   'IND-02': { better: 'up' },   'IND-03': { better: 'none' },
+    'IND-04': { better: 'up' },   'IND-14': { better: 'none' },  'IND-15': { better: 'none' },
+    'IND-16': { better: 'up' },   'IND-18': { better: 'none' },  'IND-05': { better: 'none' },
+    'IND-06': { better: 'up' },   'IND-07': { better: 'up' },   'IND-17': { better: 'down' },
+    'IND-23': { better: 'none' }, 'IND-24': { better: 'up' },   'IND-25': { better: 'none' },
+    'IND-08': { better: 'up' },   'IND-09': { better: 'up' },   'IND-10': { better: 'up' },
+    'IND-11': { better: 'up' },   'IND-12': { better: 'up' },   'IND-13': { better: 'down' },
+    'IND-19': { better: 'none' }, 'IND-20': { better: 'none' }, 'IND-21': { better: 'none' },
+    'IND-22': { better: 'none' }, 'IND-26': { better: 'up' },   'IND-27': { better: 'up' },
+    'IND-28': { better: 'up' },   'IND-29': { better: 'up' },   'IND-30': { better: 'up' },
+    'IND-31': { better: 'none' },
+};
+
+function getSignal(ind) {
+    const rule = SIGNAL_RULES[ind.id] || SIGNAL_DEFAULTS;
+    if (rule.better === 'none') return { level: 'gray', label: 'معلوماتي' };
+    const c = getChange(ind);
+    if (c === null) return { level: 'gray', label: 'غير متوفر' };
+    const gt = rule.green || SIGNAL_DEFAULTS.green;
+    const at = rule.amber || SIGNAL_DEFAULTS.amber;
+    if (rule.better === 'up') {
+        if (c >= -gt) return { level: 'green', label: 'جيد' };
+        if (c >= -at) return { level: 'amber', label: 'متابعة' };
+        return { level: 'red', label: 'قرار' };
+    } else {
+        if (c <= gt) return { level: 'green', label: 'جيد' };
+        if (c <= at) return { level: 'amber', label: 'متابعة' };
+        return { level: 'red', label: 'قرار' };
+    }
+}
+
+// ─────────────────────────────────────────────
 // تسجيل الخروج والتاريخ
 // ─────────────────────────────────────────────
 function logout() {
@@ -84,19 +120,18 @@ function initDate() {
 function updateKPIs() {
     const activeIndicators = INDICATORS.filter(i => !i.inactive);
     const total = activeIndicators.length;
-    const available = activeIndicators.filter(i => {
-        const v = getIndicatorValueForYear(i, selectedYear);
-        return v !== undefined && v !== null;
-    }).length;
-    const cats = new Set(activeIndicators.map(i => i.category)).size;
+    let greenCount = 0, amberCount = 0, redCount = 0;
+    activeIndicators.forEach(i => {
+        const s = getSignal(i);
+        if (s.level === 'green') greenCount++;
+        else if (s.level === 'amber') amberCount++;
+        else if (s.level === 'red') redCount++;
+    });
 
     animateCounter('kpiTotalValue', total);
-    animateCounter('kpiAvailableValue', available);
-    animateCounter('kpiCategoriesValue', cats);
-    document.getElementById('kpiConflictsValue').textContent = '0';
-
-    const confCard = document.getElementById('kpiConflicts');
-    confCard.className = 'kpi-card kpi-warning';
+    animateCounter('kpiGreenValue', greenCount);
+    animateCounter('kpiAmberValue', amberCount);
+    animateCounter('kpiRedValue', redCount);
 }
 
 function animateCounter(id, target) {
@@ -152,11 +187,10 @@ function renderCategories() {
                 <table class="indicators-table">
                     <thead>
                         <tr>
-                            <th style="width:80px">#</th>
+                            <th style="width:60px">#</th>
                             <th>المؤشر</th>
-                            <th style="width:70px">المصدر</th>
-                            <th style="width:130px">القيمة</th>
-                            <th style="width:90px">التغير</th>
+                            <th style="width:150px">القيمة</th>
+                            <th style="width:120px">الحالة</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -172,25 +206,19 @@ function renderCategories() {
 function renderIndicatorRow(ind) {
     const value  = getIndicatorValueForYear(ind, selectedYear);
     const change = getChange(ind);
+    const signal = getSignal(ind);
 
-    const codeClass   = ind.isNew  ? 'indicator-code new-code' : 'indicator-code';
-    const sourceClass = ind.source === 'auto' ? 'source-badge source-auto' : 'source-badge source-manual';
-    const sourceText  = ind.source === 'auto' ? 'آلي' : 'يدوي';
+    const codeClass = ind.isNew ? 'indicator-code new-code' : 'indicator-code';
 
-    // سهم التغير
-    let changeHtml = '<span class="change-none">—</span>';
-    if (change !== null) {
-        if (change > 0) {
-            changeHtml = `<span class="indicator-change change-up"><i class="bi bi-arrow-up-circle-fill"></i> ${Math.abs(change).toFixed(1)}%</span>`;
-        } else if (change < 0) {
-            changeHtml = `<span class="indicator-change change-down"><i class="bi bi-arrow-down-circle-fill"></i> ${Math.abs(change).toFixed(1)}%</span>`;
-        } else {
-            changeHtml = `<span class="indicator-change change-none"><i class="bi bi-dash-circle"></i> 0%</span>`;
-        }
+    let changeHint = '';
+    if (change !== null && value !== undefined && value !== null) {
+        const sign = change > 0 ? '+' : '';
+        const clr  = change > 0 ? 'var(--success)' : change < 0 ? 'var(--danger)' : 'var(--text-secondary)';
+        changeHint = `<span style="font-size:0.72rem;color:${clr};font-weight:600">${sign}${change.toFixed(1)}%</span>`;
     }
 
     const formattedValue = (value !== undefined && value !== null)
-        ? `<strong>${formatNumber(value)}</strong> <small style="font-weight:400;color:var(--text-secondary)">${ind.unit}</small>`
+        ? `<div class="cell-value"><strong>${formatNumber(value)}</strong> <small style="font-weight:400;color:var(--text-secondary)">${ind.unit}</small></div>${changeHint}`
         : '<span style="color:var(--text-secondary);font-size:0.8rem">غير متوفر</span>';
 
     const inactiveTag = ind.inactive
@@ -199,12 +227,9 @@ function renderIndicatorRow(ind) {
     return `
         <tr>
             <td><span class="${codeClass}">${ind.id}</span></td>
-            <td>
-                <span class="indicator-name" onclick="openIndicatorDetail('${ind.id}')">${ind.name}${inactiveTag}</span>
-            </td>
-            <td><span class="${sourceClass}" title="التغذية: ${sourceText}">${sourceText}</span></td>
+            <td><span class="indicator-name" onclick="openIndicatorDetail('${ind.id}')">${ind.name}${inactiveTag}</span></td>
             <td class="indicator-value">${formattedValue}</td>
-            <td>${changeHtml}</td>
+            <td><span class="signal-badge signal-${signal.level}">${signal.label}</span></td>
         </tr>
     `;
 }
@@ -279,7 +304,13 @@ function openIndicatorDetail(indicatorId) {
         html += infoCard('التغير السنوي', '—', '#607d8b');
     }
     html += infoCard('نوع التغذية', ind.source === 'auto' ? 'آلي (محسوب)' : 'يدوي (إدخال)', '#0277bd');
+    const sig = getSignal(ind);
+    const sigColors = { green: '#2e7d32', amber: '#e65100', red: '#c62828', gray: '#607d8b' };
+    html += infoCard('حالة الإشارة', sig.label, sigColors[sig.level]);
     html += `</div>`;
+    if (ind.note) {
+        html += `<div class="note-box"><i class="bi bi-info-circle-fill" style="color:var(--primary);margin-left:6px"></i>${ind.note}</div>`;
+    }
 
     // ── رسم الاتجاه (أول ↔ آخر سنة) ──
     html += `
@@ -511,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initYearFilter();
     refreshDashboard();
 
-    ['kpiTotal', 'kpiAvailable', 'kpiCategories', 'kpiConflicts'].forEach(id => {
+    ['kpiTotal', 'kpiGreen', 'kpiAmber', 'kpiRed'].forEach(id => {
         document.getElementById(id)?.addEventListener('click', scrollToCategories);
     });
 });
