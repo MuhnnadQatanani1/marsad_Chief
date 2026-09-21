@@ -71,17 +71,25 @@ function clearSession() {
 }
 
 /* ---------- الحماية على الصفحات ---------- */
+// مقارنة غير حساسة للامتداد: تعمل مع العناوين النظيفة (/chairman) ومع .html معاً،
+// وإلا دخلت الصفحة في حلقة توجيه لا نهائية على Vercel (cleanUrls).
+function pageName() {
+    var seg = window.location.pathname.split('/').pop() || 'index.html';
+    return seg.replace(/\.html$/, '') || 'index';
+}
+
 function requireRole() {
     const session = getSession();
     if (!session) {
         window.location.replace('login.html');
         return null;
     }
-    const page = window.location.pathname.split('/').pop() || 'index.html';
-    if (!session.pages.includes(page)) {
+    const page = pageName();
+    const allowed = session.pages.map(function (p) { return String(p).replace(/\.html$/, ''); });
+    if (!allowed.includes(page)) {
         // صلاحية خاطئة: توجيه إلى صفحة الدور نفسها
         const target = session.role === 'chairman' ? 'chairman.html' : 'deputy.html';
-        if (page !== target) window.location.replace(target);
+        if (page !== target.replace(/\.html$/, '')) window.location.replace(target);
         return null;
     }
     return session;
