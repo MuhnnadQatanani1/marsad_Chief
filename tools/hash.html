@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة توليد الدخول — مقياس إنفاذ القانون</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --primary-light: #283593;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text: #1a1a2e;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a1628, #12233f 60%, #1a237e);
+            color: var(--text);
+            min-height: 100vh;
+            direction: rtl;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .tool-card {
+            width: 620px;
+            max-width: 96vw;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 30px 32px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.45);
+        }
+        h1 { font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        h1 i { color: var(--primary); }
+        p.sub { color: var(--text-secondary); font-size: .85rem; line-height: 1.8; margin-bottom: 20px; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-weight: 700; font-size: .88rem; margin-bottom: 6px; }
+        .field label i { color: var(--primary); margin-left: 6px; }
+        input, textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: .92rem;
+            outline: none;
+            background: #fbfcfe;
+        }
+        input:focus, textarea:focus { border-color: var(--primary-light); }
+        textarea { min-height: 92px; resize: vertical; direction: ltr; text-align: left; font-size: .8rem; }
+        .row { display: flex; gap: 10px; }
+        .row .field { flex: 1; }
+        button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: .92rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        button.secondary {
+            background: #e8eaf6;
+            color: var(--primary);
+        }
+        .result { margin-top: 8px; }
+        .result-label { font-size: .8rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+        .result-box {
+            background: #0f172a;
+            color: #c7d2fe;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-family: Consolas, monospace;
+            font-size: .78rem;
+            direction: ltr;
+            text-align: left;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.7;
+        }
+        .hint { font-size: .78rem; color: var(--text-secondary); line-height: 1.8; margin-top: 14px; }
+        .hint i { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="tool-card">
+        <h1><i class="bi bi-key"></i> أداة توليد بيانات الدخول</h1>
+        <p class="sub">
+            تولّد مِلحاً عشوائياً وهاش SHA-256 للمِلح+كلمة المرور (بنفس طريقة ملف
+            <bdi dir="ltr">js/users.js</bdi>: ترميز UTF-8 ثم دالة digest). تُستخدم
+            المخرجات فقط لكتابة سطر جديد في قائمة المستخدمين. تُفتح هذه الصفحة محلياً
+            ولا تُنشر مع النظام.
+        </p>
+
+        <div class="row">
+            <div class="field">
+                <label for="username"><i class="bi bi-person"></i> اسم المستخدم</label>
+                <input id="username" placeholder="chairman">
+            </div>
+            <div class="field">
+                <label for="password"><i class="bi bi-lock"></i> كلمة المرور</label>
+                <input id="password" type="password" placeholder="كلمة المرور" dir="ltr">
+            </div>
+        </div>
+
+        <div class="result">
+            <div class="result-label">ناتج SHA-256(mِلح + كلمة المرور)</div>
+            <textarea id="outHash" readonly placeholder="يظهر الهاش هنا بعد الحساب…"></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <button id="genBtn"><i class="bi bi-gear"></i> توليد مِلح وهاش</button>
+            <button id="copyBtn" class="secondary"><i class="bi bi-clipboard"></i> نسخ سطر المستخدم</button>
+        </div>
+
+        <div class="hint">
+            <i class="bi bi-info-circle"></i>
+            الصيغة المنسوخة سطر JSON جاهز تُلصق داخل مصفوفة
+            <bdi dir="ltr">USERS</bdi> في
+            <bdi dir="ltr">js/users.js</bdi>:
+            <span id="copyReady" style="font-family:Consolas,monospace;font-size:.74rem;color:#37474f"></span>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+        (function () {
+            var userEl = document.getElementById('username');
+            var passEl = document.getElementById('password');
+            var outEl = document.getElementById('outHash');
+            var copyReady = document.getElementById('copyReady');
+            var last = { username: '', salt: '', hash: '' };
+
+            function randHex(len) {
+                var bytes = new Uint8Array(len / 2);
+                crypto.getRandomValues(bytes);
+                return Array.from(bytes, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+            }
+
+            async function sha256Hex(text) {
+                var data = new TextEncoder().encode(text);
+                var digest = await crypto.subtle.digest('SHA-256', data);
+                var bytes = new Uint8Array(digest);
+                var hex = '';
+                for (var i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
+                return hex;
+            }
+
+            function buildLine() {
+                var u = (userEl.value || '').trim().toLowerCase();
+                if (!u || !last.salt) return '';
+                copyReady.textContent = '{ username: \'' + u + '\', role: \'...\', name: \'...\', pages: [\'...\'], salt: \'' + last.salt + '\', hash: \'' + last.hash + '\' }';
+                return JSON.stringify({ username: u, salt: last.salt, hash: last.hash }, null, 2);
+            }
+
+            document.getElementById('genBtn').addEventListener('click', async function () {
+                var pass = passEl.value;
+                if (!pass) {
+                    outEl.value = 'أدخل كلمة المرور أولاً.';
+                    copyReady.textContent = '';
+                    return;
+                }
+                var salt = randHex(16);
+                var hash = await sha256Hex(salt + pass);
+                last.salt = salt;
+                last.hash = hash;
+                outEl.value = hash;
+                buildLine();
+            });
+
+            document.getElementById('copyBtn').addEventListener('click', function () {
+                var text = JSON.stringify(last);
+                if (!last.hash) {
+                    outEl.value = 'ولّد الهاش أولاً.';
+                    return;
+                }
+                var line = '    { username: \'' + (userEl.value || '').trim().toLowerCase() + '\', role: \'...\', name: \'...\', pages: [\'...\'], salt: \'' + last.salt + '\', hash: \'' + last.hash + '\' },';
+                navigator.clipboard.writeText(line).then(function () {
+                    outEl.value = 'تم نسخ السطر: ' + line;
+                }).catch(function () {
+                    outEl.value = line;
+                });
+            });
+
+            userEl.addEventListener('input', buildLine);
+        })();
+    </script>
+</body>
+</html>

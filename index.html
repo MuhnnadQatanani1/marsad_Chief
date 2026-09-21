@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقياس إنفاذ القانون — هيئة مكافحة الفساد</title>
+</head>
+<body>
+    <script src="js/users.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        (function () {
+            var session = getSession();
+            if (!session) {
+                window.location.replace('login.html');
+            } else if (session.role === 'chairman') {
+                window.location.replace('chairman.html');
+            } else {
+                window.location.replace('deputy.html');
+            }
+        })();
+    </script>
+</body>
+</html>
