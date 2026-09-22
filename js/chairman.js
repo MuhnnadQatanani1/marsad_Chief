@@ -26,6 +26,7 @@
         tableViews: {},              // tableId -> 'table' | 'bars'
         modalView: 'chart',          // 'chart' | 'table'
         showEmptyRows: false,
+        expandedAxes: {},
         returnFocus: null
     };
 
@@ -50,6 +51,55 @@
 
     function esc(s) {
         return escapeHtml(s);
+    }
+
+    const SOURCE_TYPE_BY_ID = {
+        '1.1': 'manual',
+        '2.1': 'manual',
+        '1.2': 'manual',
+        '2.2': 'auto',
+        '3.2': 'auto',
+        '4.2': 'auto',
+        '5.2': 'auto',
+        '6.2': 'manual',
+        '7.2': 'auto',
+        '8.2': 'manual',
+        '9.2': 'manual',
+        '10.2': 'manual',
+        '11.2': 'manual',
+        '12.2': 'manual',
+        '13.2': 'manual',
+        '14.2': 'manual',
+        '15.2': 'manual',
+        '16.2': 'manual',
+        '17.2': 'manual',
+        '18.2': 'auto',
+        '19.2': 'auto',
+        '20.2': 'auto',
+        '21.2': 'manual',
+        '22.2': 'manual',
+        '23.2': 'manual',
+        '24.2': 'manual',
+        '25.2': 'manual',
+        '26.2': 'manual',
+        '27.2': 'manual',
+        '28.2': 'manual',
+        '29.2': 'manual'
+    };
+
+    function sourceTypeHtml(item) {
+        const type = SOURCE_TYPE_BY_ID[item.id] || 'manual';
+        const label = type === 'auto' ? 'آلي' : 'يدوي';
+        const icon = type === 'auto' ? 'bi-cpu' : 'bi-pencil-square';
+        return '<span class="source-mode source-' + type + '"><i class="bi ' + icon + '"></i> ' + label + '</span>';
+    }
+
+    function valueHtml(item) {
+        if (item.single) return '<bdi dir="ltr">' + num1(item.single.pct) + '%</bdi>';
+        if (!item.headline || item.headline[state.year] === undefined || item.headline[state.year] === null) {
+            return '<span class="market-na">غير متوفر</span>';
+        }
+        return '<bdi dir="ltr">' + Number(item.headline[state.year]).toLocaleString('en-US') + '</bdi>';
     }
 
     /* ---------- التجزئة (#year=2025&scale=…) ---------- */
@@ -86,13 +136,13 @@
         let html = '';
         APP.data.scales.forEach(sc => {
             const active = sc.id === state.scale;
-            const icon = sc.status === 'ready' ? 'bi-clipboard2-data' : 'bi-hourglass-split';
-            const tag = sc.status === 'ready'
-                ? '<span class="badge badge-success">جاهز</span>'
-                : '<span class="badge badge-warning">قيد الإعداد</span>';
+            const icon = sc.id === 'law_enforcement' ? 'bi-bank' : 'bi-search';
+            const tag = sc.status === 'pending'
+                ? '<span class="scale-status pending">قيد الإعداد</span>'
+                : '';
             html += '<li class="nav-item" role="presentation">' +
                 '<button type="button" role="tab" aria-selected="' + active + '" ' +
-                'class="nav-link category-tab' + (active ? ' active' : '') + '" data-scale="' + sc.id + '">' +
+                'class="nav-link category-tab scale-choice' + (active ? ' active' : '') + '" data-scale="' + sc.id + '">' +
                 '<i class="bi ' + icon + '"></i>' + esc(sc.name) + ' ' + tag + '</button></li>';
         });
         TABS_EL.innerHTML = html;
@@ -104,7 +154,7 @@
         if (scale.status === 'pending') {
             if (TOP_EL) TOP_EL.innerHTML = '';
             CONTENT_EL.innerHTML =
-                '<div class="empty-state animate-in">' +
+                '<div class="empty-state pending-scale animate-in">' +
                 '<i class="bi bi-hourglass-split"></i>' +
                 '<h3>قيد الإعداد</h3>' +
                 '<p>' + esc(scale.emptyMessage || 'بيانات مقياس جهود مكافحة الفساد لم تُضَف بعد.') + '</p>' +
@@ -114,54 +164,35 @@
 
         let top = '';
 
-        // ترويسة الصفحة مع أزرار السنوات (بلا أي سطر توضيحي تحت العنوان)
-        const actions =
-            '<div class="d-flex align-center gap-2 flex-wrap">' +
-            '<span class="text-small" style="opacity:.8">السنة:</span>' +
-            yearGroupHtml(state.year) +
-            '</div>';
-
-        top += pageHeaderHtml('bi-clipboard2-data',
-            'لوحة رئيس الهيئة — مقياس إنفاذ القانون 2022–2025', '', actions);
-
-        // السطر الأول: بطاقات الإتاحة بالكحلي (لا تتغير مع السنة) — قابلة للضغط لفلترة صفوف المحاور
         const avail = APP.data.kpis.availability;
         const cards = [
-            { key: 'all', label: 'إجمالي المؤشرات', value: avail.total, cls: 'bg-gradient-primary', icon: 'bi-grid-3x3-gap-fill' },
-            { key: 'available', label: 'متوفر', value: avail.available, sub: 'نحو 65% من الإجمالي', cls: 'bg-gradient-info', icon: 'bi-check-circle-fill' },
-            { key: 'partial', label: 'متوفر جزئياً', value: avail.partial, cls: 'bg-gradient-ink', icon: 'bi-exclamation-circle-fill' },
-            { key: 'unavailable', label: 'غير متوفر', value: avail.unavailable, cls: 'bg-gradient-navy-soft', icon: 'bi-x-circle-fill' }
+            { key: 'all', label: 'إجمالي المؤشرات', value: avail.total },
+            { key: 'available', label: 'متوفر', value: avail.available, sub: 'نحو 65% من الإجمالي' },
+            { key: 'partial', label: 'متوفر جزئياً', value: avail.partial },
+            { key: 'unavailable', label: 'غير متوفر', value: avail.unavailable }
         ];
 
-        top += '<div class="stat-cards">';
+        top += '<div class="market-toolbar animate-in">' +
+            '<div class="market-heading">' +
+            '<h2>مقياس إنفاذ القانون</h2>' +
+            '<p>قراءة داخلية مؤقتة لمؤشرات 2022–2025 إلى حين جاهزية برنامج المرصد.</p>' +
+            '</div>' +
+            '<div class="market-year"><span>السنة</span>' + yearGroupHtml(state.year) + '</div>' +
+            '<div class="availability-strip">';
         cards.forEach(c => {
             const active = (c.key === 'all' && !state.statusFilter) || c.key === state.statusFilter;
-            top += '<div class="stat-card ' + c.cls + (active ? ' active' : '') + '" role="button" tabindex="0" ' +
+            top += '<button type="button" class="mini-kpi' + (active ? ' active' : '') + '" ' +
                 'data-status="' + c.key + '" aria-pressed="' + active + '">' +
-                '<div class="stat-icon"><i class="bi ' + c.icon + '"></i></div>' +
-                '<span class="stat-value"><bdi dir="ltr">' + c.value + '</bdi></span>' +
-                '<span class="stat-label">' + c.label + '</span>' +
-                (c.sub ? '<span class="stat-label">' + c.sub + '</span>' : '') +
-                '</div>';
+                '<strong><bdi dir="ltr">' + c.value + '</bdi></strong>' +
+                '<span>' + c.label + (c.sub ? '<small>' + c.sub + '</small>' : '') + '</span>' +
+                '</button>';
         });
-        top += '</div>';
-
-        // السطر الثاني: أربعة مؤشرات رئيسية بالذهبي (تتغير مع السنة)
-        top += kpiRowHtml();
+        top += '</div></div>';
 
         if (TOP_EL) TOP_EL.innerHTML = top;
 
         let html = '';
-
-        // مفتاح ألوان الأسهم (أخضر للصعود / أحمر للهبوط)
-        html += '<div class="trend-legend">' +
-            '<i class="bi bi-info-circle"></i> لون السهم حسب الاتجاه:' +
-            '<span><span class="trend-arrow trend-good"><span class="arrow-icon">▲</span></span> صعود</span>' +
-            '<span><span class="trend-arrow trend-bad"><span class="arrow-icon">▼</span></span> هبوط</span>' +
-            '<span><span class="trend-arrow trend-neutral"><span class="arrow-icon">—</span></span> محايد / بلا سلسلة</span>' +
-            '</div>';
-
-        // بطاقات المحاور العشرة (بجانبها لوحة التوصيات)
+        html += '<div class="market-title-row"><h2>بورصة المؤشرات</h2></div>';
         html += axisCardsHtml();
 
         CONTENT_EL.innerHTML = html;
@@ -193,17 +224,20 @@
         let html = '';
         APP.data.axes.forEach((axis, idx) => {
             const rows = axis.indicators.map(id => ind(id));
+            const isOpen = !!state.expandedAxes[axis.no];
 
-            let tableHtml = '<table class="table"><thead><tr>' +
-                '<th>المؤشر</th><th>الاسم</th><th>الاتجاه</th>' +
+            let tableHtml = '<table class="table market-table"><thead><tr>' +
+                '<th>#</th><th>المؤشر</th><th>المصدر</th><th>القيمة</th><th>التغير</th>' +
                 '</tr></thead><tbody>';
 
             rows.forEach(r => {
                 const hidden = state.statusFilter && r.status !== state.statusFilter;
-                tableHtml += '<tr class="indicator-row' + (hidden ? ' axis-row-hidden' : '') + '" role="button" tabindex="0" data-id="' + r.id + '" ' +
+                tableHtml += '<tr class="indicator-row status-' + r.status + (hidden ? ' axis-row-hidden' : '') + '" role="button" tabindex="0" data-id="' + r.id + '" ' +
                     'data-status="' + r.status + '">' +
                     '<td><span class="indicator-code-pill">' + r.id + '</span></td>' +
-                    '<td><div class="indicator-name-cell">' + esc(r.shortName || r.name) + '</div></td>' +
+                    '<td><div class="indicator-name-cell">' + esc(r.name || r.shortName) + '</div></td>' +
+                    '<td>' + sourceTypeHtml(r) + '</td>' +
+                    '<td class="market-value">' + valueHtml(r) + '</td>' +
                     '<td>' + rowTrendHtml(r) + '</td>' +
                     '</tr>';
             });
@@ -214,10 +248,16 @@
                 '<div class="axis-card-title">' +
                 '<div class="axis-num">' + axisNumText(axis.no) + '</div>' +
                 '<div><h3>' + axis.no + '. ' + esc(axis.name) + '</h3>' +
-                '<div class="axis-card-item">' + esc(axis.item) + '</div></div>' +
+                '<div class="axis-card-item">' + esc(rows.length + ' مؤشرات') + '</div></div>' +
                 '</div>' +
+                '<button type="button" class="axis-toggle" data-axis-toggle="' + axis.no + '" aria-expanded="' + isOpen + '">' +
+                '<span>' + (isOpen ? 'إخفاء المؤشرات' : 'عرض المؤشرات') + '</span>' +
+                '<i class="bi bi-chevron-down"></i>' +
+                '</button>' +
                 '</div>' +
+                '<div class="axis-indicators' + (isOpen ? ' open' : '') + '">' +
                 '<div class="table-scroll">' + tableHtml + '</div>' +
+                '</div>' +
                 '</div>';
         });
         return html;
@@ -226,7 +266,7 @@
     /* سهم الصفوف: ▲ / ▼ / — فقط، من دون أرقام (المفتاح أعلاه يشرح اللون) */
     function rowTrendHtml(item) {
         if (String(state.year) === String(APP.data.meta.baseYear)) {
-            return '<span class="trend-arrow trend-base"><i class="bi bi-star-fill"></i> سنة الأساس</span>';
+            return '<span class="trend-arrow trend-neutral"><span class="arrow-icon">—</span></span>';
         }
         if (item.single) {
             return '<span class="trend-arrow trend-neutral" title="رقم واحد بلا سلسلة"><span class="arrow-icon">—</span></span>';
@@ -235,11 +275,12 @@
             return '<span class="trend-arrow trend-neutral"><span class="arrow-icon">—</span></span>';
         }
         const t = computeTrend(item, state.year);
-        if (t.kind === 'new') return '<span class="trend-arrow trend-neutral" title="جديد"><span class="arrow-icon">▲</span></span>';
-        if (t.kind === 'zero') return '<span class="trend-arrow trend-neutral" title="ثابت عند 0"><span class="arrow-icon">▬</span></span>';
+        if (t.kind === 'new') return '<span class="trend-arrow trend-good" title="جديد"><span class="arrow-icon">▲</span> جديد</span>';
+        if (t.kind === 'zero') return '<span class="trend-arrow trend-neutral" title="ثابت عند 0"><span class="arrow-icon">—</span> 0.0%</span>';
         if (t.kind !== 'arrow') return '<span class="trend-arrow trend-neutral" title="لا توجد مقارنة"><span class="arrow-icon">—</span></span>';
         return '<span class="trend-arrow ' + t.colorClass + '" title="' + esc(t.text) + '">' +
-            '<span class="arrow-icon">' + (t.diff >= 0 ? '▲' : '▼') + '</span></span>';
+            '<span class="arrow-icon">' + (t.diff > 0 ? '▲' : (t.diff < 0 ? '▼' : '—')) + '</span> ' +
+            t.sign + t.pct.toFixed(1) + '%</span>';
     }
 
     /* ============================================================
@@ -288,53 +329,52 @@
         const nav = navList();
         const idx = nav.indexOf(item.id);
         const total = nav.length;
+        const activeTable = state.tableViews[item.id] || (item.tables && item.tables[0]) || null;
+        const axis = APP.data.axes.find(a => a.indicators.includes(item.id));
 
         MODAL_TITLE.innerHTML =
             '<span class="indicator-code-pill" style="background:rgba(255,255,255,.2);color:#fff">' + item.id + '</span> ' +
             esc(item.shortName || item.name);
 
-        /* 1) معنى المؤشر / ماذا يقيس — فقط */
         let main = '<div class="meaning-box">' +
             '<div class="meaning-label"><i class="bi bi-bullseye"></i> ماذا يقيس هذا المؤشر؟</div>' +
             '<p>' + esc(item.name) + '</p>' +
             '<div class="d-flex flex-wrap gap-2" style="margin-top:10px">' +
             '<span class="source-chip"><i class="bi bi-rulers"></i> الوحدة: ' + esc(item.unit || '—') + '</span>' +
+            sourceTypeHtml(item) +
             (item.headlineLabel ? '<span class="source-chip"><i class="bi bi-tag"></i> ' + esc(item.headlineLabel) + '</span>' : '') +
             '</div></div>';
 
-        /* 2) شريط التبديل: رسم بياني / جدول كامل + إظهار البنود الفارغة */
-        const viewBar =
-            '<div class="view-toggle-bar">' +
-            '<div class="view-toggle-group">' +
-            '<button type="button" class="view-toggle' + (state.modalView === 'chart' ? ' active' : '') + '" data-view="chart">' +
-            '<i class="bi bi-graph-up"></i> الرسم البياني</button>' +
-            '<button type="button" class="view-toggle' + (state.modalView === 'table' ? ' active' : '') + '" data-view="table">' +
-            '<i class="bi bi-table"></i> الجدول الكامل</button>' +
-            '</div>' +
-            '<button type="button" class="table-toggle' + (state.showEmptyRows ? ' active' : '') + '" data-act="reveal">' +
-            '<i class="bi bi-eye"></i> إظهار البنود الفارغة</button>' +
+        main += chartBlockHtml(item);
+
+        const conclusion = item.conclusion || (axis && axis.findings && axis.findings.length ? axis.findings[0] : '');
+        main += '<div class="mini-conclusion">' +
+            '<strong>استنتاج مختصر</strong>' +
+            '<p>' + esc(conclusion || 'سيتم إضافة الاستنتاج المختصر عند تزويده.') + '</p>' +
             '</div>';
 
-        main += viewBar;
-
-        if (state.modalView === 'chart') {
-            main += chartBlockHtml(item);
-        } else {
-            main += '<div class="modal-tables-wrap">';
-            if (item.tables && item.tables.length) {
-                item.tables.forEach(tid => {
-                    const table = APP.data.tables[tid];
-                    if (table) main += tableBlockHtml(table);
-                });
-            }
-            if (item.extra && item.extra.length) {
-                main += extraSeriesHtml(item);
-            }
-            if (item.details && item.details.length) {
-                main += detailsHtml(item);
-            }
+        if (item.tables && item.tables.length) {
+            main += '<div class="subindicator-box">' +
+                '<div class="subindicator-head">' +
+                '<strong>المؤشرات الفرعية</strong>' +
+                '<button type="button" class="table-toggle' + (state.showEmptyRows ? ' active' : '') + '" data-act="reveal">' +
+                '<i class="bi bi-eye"></i> إظهار البنود الفارغة</button>' +
+                '</div>' +
+                '<div class="subindicator-tabs">';
+            item.tables.forEach(tid => {
+                const table = APP.data.tables[tid];
+                if (!table) return;
+                main += '<button type="button" class="subindicator-tab' + (tid === activeTable ? ' active' : '') + '" data-subtable="' + tid + '">' +
+                    esc(table.title) + '</button>';
+            });
+            main += '</div>';
+            const table = APP.data.tables[activeTable];
+            if (table) main += tableBlockHtml(table);
             main += '</div>';
         }
+
+        if (item.extra && item.extra.length) main += extraSeriesHtml(item);
+        if (item.details && item.details.length) main += detailsHtml(item);
 
         // الحالة الخاصة: رقم وحيد بلا سلسلة (29.2) — تُعرض في الرسم والجدول معاً
         if (item.single) {
@@ -457,7 +497,6 @@
     }
 
     function tableBlockHtml(table) {
-        const view = state.tableViews[table.id] || 'table';
         const isPct = table.id === 'survey_detail';
         const hasEmptyRows = table.rows.some(r => isZeroRow(r));
 
@@ -465,19 +504,9 @@
             '<div class="d-flex align-center gap-2 flex-wrap">' +
             '<div class="side-title" style="margin-bottom:0"><i class="bi bi-table"></i> ' + esc(table.title) + '</div>' +
             '<span class="source-chip"><i class="bi bi-rulers"></i> الوحدة: ' + esc(table.unit || '—') + '</span>' +
-            '</div>' +
-            '<div class="d-flex align-center gap-2">' +
-            '<button type="button" class="table-toggle' + (view === 'table' ? ' active' : '') + '" data-tview="table" data-table="' + table.id + '">' +
-            '<i class="bi bi-table"></i> جدول</button>' +
-            '<button type="button" class="table-toggle' + (view === 'bars' ? ' active' : '') + '" data-tview="bars" data-table="' + table.id + '">' +
-            '<i class="bi bi-bar-chart"></i> أشرطة</button>' +
             '</div></div>';
 
-        if (view === 'bars') {
-            html += renderBarsTable(table, isPct);
-        } else {
-            html += renderPlainTable(table, isPct);
-        }
+        html += renderPlainTable(table, isPct);
 
         if (table.warning) {
             html += '<div class="alert-warning" style="margin-top:10px">' +
@@ -560,35 +589,37 @@
         const el = document.getElementById('recsPanel');
         if (!el) return;
         const all = getAllRecommendations();
-        const order = ['short', 'medium', 'strategic'];
+        const active = state.recsHorizon || 'short';
 
         let html = '<div class="recs-header">' +
-            '<div class="recs-header-title"><i class="bi bi-newspaper"></i> التوصيات</div>' +
-            '<span class="recs-count"><bdi dir="ltr">' + all.length + '</bdi> توصية</span>' +
+            '<div class="recs-header-title"><i class="bi bi-lightbulb"></i> التوصيات</div>' +
+            '</div>';
+        html += '<div class="recs-filter" role="tablist" aria-label="مدى التوصيات">' +
+            '<button type="button" data-rec-horizon="short" class="' + (active === 'short' ? 'active' : '') + '">على المدى القصير</button>' +
+            '<button type="button" data-rec-horizon="medium" class="' + (active === 'medium' ? 'active' : '') + '">متوسطة المدى</button>' +
+            '<button type="button" data-rec-horizon="strategic" class="' + (active === 'strategic' ? 'active' : '') + '">المدى الطويل</button>' +
             '</div>';
         html += '<div class="recs-body">';
 
-        order.forEach(h => {
-            const group = all.filter(r => r.horizon === h);
-            if (!group.length) return;
-            html += '<div class="recs-group">' +
-                '<div class="recs-group-title"><span class="recs-group-dot"></span>' + esc(HORIZON_GROUP[h]) +
-                ' <span class="recs-group-count"><bdi dir="ltr">' + group.length + '</bdi></span></div>';
-            group.forEach(r => {
-                html += '<div class="rec-item">' +
-                    '<div class="rec-item-top">' +
-                    (r.axisNo ? '<span class="axis-tag"><i class="bi bi-hash"></i> المحور ' + axisNumText(r.axisNo) + '</span>' : '') +
-                    '<span class="horizon-badge horizon-' + r.horizon + '">' + HORIZON_LABELS[r.horizon] + '</span>' +
-                    '</div>' +
-                    '<p>' + esc(r.text) + '</p>' +
-                    '</div>';
-            });
-            html += '</div>';
+        const group = all.filter(r => r.horizon === active);
+        html += '<div class="recs-group">';
+        group.forEach(r => {
+            html += '<div class="rec-item">' +
+                '<p>' + esc(r.text) + '</p>' +
+                '</div>';
         });
+        html += '</div>';
 
         html += '</div>';
         el.innerHTML = html;
     }
+
+    document.getElementById('recsPanel').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-rec-horizon]');
+        if (!btn) return;
+        state.recsHorizon = btn.getAttribute('data-rec-horizon');
+        renderRecsPanel();
+    });
 
     /* ---------- تفويض الأحداث ---------- */
     TABS_EL.addEventListener('click', function (e) {
@@ -615,7 +646,7 @@
             renderContent();
             return;
         }
-        const stat = e.target.closest('.stat-card');
+        const stat = e.target.closest('.stat-card, .mini-kpi');
         if (stat) {
             const k = stat.getAttribute('data-status');
             state.statusFilter = (state.statusFilter === k || k === 'all') ? null : k;
@@ -627,6 +658,13 @@
 
     CONTENT_EL.addEventListener('click', function (e) {
         onTopClick(e);
+        const axisToggle = e.target.closest('[data-axis-toggle]');
+        if (axisToggle) {
+            const axisNo = axisToggle.getAttribute('data-axis-toggle');
+            state.expandedAxes[axisNo] = !state.expandedAxes[axisNo];
+            renderContent();
+            return;
+        }
         const row = e.target.closest('.indicator-row');
         if (row) {
             openDetail(row.getAttribute('data-id'), row);
@@ -669,10 +707,9 @@
             renderModal();
             return;
         }
-        const tview = e.target.closest('[data-tview]');
-        if (tview) {
-            const tid = tview.getAttribute('data-table');
-            state.tableViews[tid] = tview.getAttribute('data-tview');
+        const subtable = e.target.closest('[data-subtable]');
+        if (subtable) {
+            state.tableViews[state.detailId] = subtable.getAttribute('data-subtable');
             renderModal();
         }
     });

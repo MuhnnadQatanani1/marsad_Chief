@@ -200,11 +200,12 @@ function navbarHtml(session, subtitle) {
         '<div class="site-nav-brand">' +
         '<div class="site-nav-shield site-nav-logo"><img src="assets/pacc-logo.jpg" alt="شعار هيئة مكافحة الفساد" onerror="this.remove()"></div>' +
         '<div class="site-nav-titles">' +
+        '<p class="site-nav-state">دولة فلسطين</p>' +
         '<h1>هيئة مكافحة الفساد</h1>' +
-        '<p>' + (subtitle || 'المرصد الوطني لمؤشرات النزاهة ومكافحة الفساد') + '</p>' +
+        '<p>المرصد الوطني للنزاهة ومؤشرات مكافحة الفساد</p>' +
         '</div></div>' +
         '<div class="site-nav-actions">' +
-        '<span class="site-nav-user"><i class="bi bi-person-circle"></i> ' + session.name + '</span>' +
+        '<div class="marsad-mark" aria-label="شعار المرصد">المرصد</div>' +
         '<button class="site-nav-btn" onclick="logout()" title="تسجيل الخروج" aria-label="تسجيل الخروج"><i class="bi bi-box-arrow-right"></i></button>' +
         '</div></div></header>';
 }
