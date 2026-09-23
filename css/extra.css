@@ -1423,19 +1423,6 @@
 .site-nav-actions {
     gap: 10px;
 }
-.marsad-mark {
-    height: 42px;
-    min-width: 92px;
-    border: 1px solid #d9e2ec;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #10243f;
-    background: #f8fafc;
-    font-weight: 900;
-    letter-spacing: 0;
-}
 .site-nav-btn {
     border-radius: 8px;
     background: #10243f;
@@ -1855,11 +1842,6 @@ body {
 .site-nav-titles p {
     white-space: normal;
 }
-.marsad-mark {
-    border-color: rgba(200, 164, 120, 0.45);
-    background: linear-gradient(180deg, #fff, #f7f2ea);
-    box-shadow: inset 0 -1px 0 rgba(200, 164, 120, 0.22);
-}
 .site-nav-btn {
     width: 42px;
     height: 42px;
@@ -2171,11 +2153,6 @@ body {
     .site-nav-actions {
         flex-shrink: 0;
     }
-    .marsad-mark {
-        min-width: 74px;
-        height: 38px;
-        font-size: 0.82rem;
-    }
     .site-nav-btn {
         width: 38px;
         height: 38px;
@@ -2340,9 +2317,6 @@ body {
 @media (max-width: 420px) {
     .site-nav-inner {
         flex-wrap: nowrap;
-    }
-    .marsad-mark {
-        display: none;
     }
     .mini-kpi strong {
         width: 36px;

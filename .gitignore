@@ -11,3 +11,6 @@ Desktop.ini
 
 # Logs / temp
 *.log
+
+# Local environment (Vercel CLI tokens — never commit)
+.env.local

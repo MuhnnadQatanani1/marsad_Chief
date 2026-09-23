@@ -205,7 +205,7 @@ function navbarHtml(session, subtitle) {
         '<p>المرصد الوطني للنزاهة ومؤشرات مكافحة الفساد</p>' +
         '</div></div>' +
         '<div class="site-nav-actions">' +
-        '<div class="marsad-mark" aria-label="شعار المرصد">المرصد</div>' +
+        '<div class="site-nav-shield site-nav-logo observatory-logo" aria-label="شعار المرصد"><img src="assets/observatory-logo.png" alt="شعار المرصد" onerror="this.remove()"></div>' +
         '<button class="site-nav-btn" onclick="logout()" title="تسجيل الخروج" aria-label="تسجيل الخروج"><i class="bi bi-box-arrow-right"></i></button>' +
         '</div></div></header>';
 }
