@@ -225,7 +225,7 @@
     {
       "id": "1.1",
       "axis": 1,
-      "name": "عدد التشريعات أو البنود التشريعية التي أُقرّت أو عُدّلت والمصنفة معززة للوقاية من الفساد لدى الجهات الخاضعة وجهات إنفاذ القانون",
+      "name": "عدد التشريعات أو البنود في التشريعات التي تم إقرارها أو تعديلها المصنفة على أنها معززة للوقاية من الفساد لدى الجهات الخاضعة وجهات انفاذ القانون",
       "shortName": "التشريعات المعززة للوقاية من الفساد",
       "nameEn": "Number of laws or legislative provisions enacted or amended and classified as strengthening corruption prevention among covered entities and law-enforcement bodies",
       "status": "available",
@@ -253,7 +253,7 @@
     {
       "id": "1.2",
       "axis": 2,
-      "name": "عدد الشكاوى والبلاغات الواردة لهيئة مكافحة الفساد",
+      "name": "الشكاوى والبلاغات الواردة لهيئة مكافحة الفساد",
       "shortName": "الشكاوى والبلاغات الواردة",
       "nameEn": "Number of complaints/reports received by the Anti-Corruption Commission",
       "status": "available",
@@ -296,7 +296,7 @@
     {
       "id": "4.2",
       "axis": 3,
-      "name": "الملفات التحقيقية المحالة من هيئة مكافحة الفساد إلى نيابة جرائم الفساد",
+      "name": "الملفات التحقيقية المحالة من هيئة مكافحة الفساد الى نيابة جرائم الفساد",
       "shortName": "الملفات المحالة إلى النائب العام",
       "nameEn": "Investigation files referred by the Commission to the Corruption Crimes Prosecution",
       "status": "available",
@@ -310,7 +310,7 @@
     {
       "id": "5.2",
       "axis": 3,
-      "name": "عدد المشتبه بهم المحالين من الهيئة إلى نيابة جرائم الفساد",
+      "name": "عدد المشتبه بهم المحالين من هيئة مكافحة الفساد الى نيابة جرائم الفساد حسب الجنس",
       "shortName": "المشتبه بهم المحالون للنيابة",
       "nameEn": "Number of suspects referred by the Commission to the Corruption Crimes Prosecution",
       "status": "available",
@@ -324,7 +324,7 @@
     {
       "id": "6.2",
       "axis": 4,
-      "name": "عدد ملفات التحقيق الجزائي الواردة لنيابة جرائم الفساد",
+      "name": "ملفات التحقيق الجزائي الواردة لنيابة جرائم الفساد",
       "shortName": "الملفات الواردة للنيابة",
       "nameEn": "Number of criminal investigation files received by the Corruption Crimes Prosecution",
       "status": "available",
@@ -338,7 +338,7 @@
     {
       "id": "7.2",
       "axis": 4,
-      "name": "عدد ملفات التحقيق الجزائي المنجزة لدى نيابة جرائم الفساد",
+      "name": "ملفات التحقيق الجزائي المنجزة لدى نيابة جرائم الفساد",
       "shortName": "الملفات المنجزة لدى النيابة",
       "nameEn": "Number of criminal investigation files finalized by the Corruption Crimes Prosecution",
       "status": "available",
@@ -351,7 +351,7 @@
     {
       "id": "8.2",
       "axis": 4,
-      "name": "عدد المتهمين المحالين من نيابة جرائم الفساد إلى محكمة جرائم الفساد",
+      "name": "المتهمين المحالين من نيابة جرائم الفساد لمحكمة جرائم الفساد حسب الجنس",
       "shortName": "المتهمون المحالون للمحكمة",
       "nameEn": "Number of defendants referred by the Corruption Crimes Prosecution to the Corruption Crimes Court",
       "status": "available",
@@ -367,7 +367,7 @@
     {
       "id": "9.2",
       "axis": 5,
-      "name": "عدد القضايا المفصولة بحكم في محكمة جرائم الفساد",
+      "name": "القضايا المفصولة بحكم في محكمة جرائم الفساد حسب نتيجة الحكم",
       "shortName": "القضايا المفصولة بحكم",
       "nameEn": "Number of cases adjudicated by final ruling in the Corruption Crimes Court",
       "status": "available",
@@ -380,7 +380,7 @@
     {
       "id": "10.2",
       "axis": 5,
-      "name": "عدد المدانين في القضايا المفصولة بحكم في محكمة جرائم الفساد",
+      "name": "المدانين في القضايا المفصولة بحكم في محكمة جرائم الفساد",
       "shortName": "المدانون بأحكام قضائية",
       "nameEn": "Number of persons convicted in cases adjudicated by the Corruption Crimes Court",
       "status": "available",
@@ -408,7 +408,7 @@
     {
       "id": "12.2",
       "axis": 6,
-      "name": "مدة إدارة الشكوى والتصرف فيها بجميع مراحلها من الاستلام حتى الحسم أو النطق بالحكم النهائي",
+      "name": "مدة إدارة ونظر الشكوى والتصرف فيها بجميع مراحلها من لحظة استلامها وحتى الحسم بها بقرار من جهة الاختصاص او النطق بالحكم النهائي فيها من محكمة جرائم الفساد.",
       "shortName": "مدة الإجراءات (زمن التقاضي)",
       "nameEn": "Time taken to process and dispose of a complaint through all stages",
       "status": "unavailable",
@@ -423,7 +423,7 @@
     {
       "id": "13.2",
       "axis": 7,
-      "name": "عدد الحالات التي تم فيها استرداد العائدات والأموال الجرمية المهرّبة للخارج",
+      "name": "عدد الحالات التي تم فيها استرداد العائدات والأموال الجرمية المهربة للخارج",
       "shortName": "حالات استرداد الأموال المهرّبة",
       "nameEn": "Number of cases in which criminal proceeds and funds smuggled abroad were recovered",
       "status": "available",
@@ -437,7 +437,7 @@
     {
       "id": "14.2",
       "axis": 7,
-      "name": "قيمة العائدات والأموال الجرمية المهرّبة للخارج المستردة",
+      "name": "قيمة العائدات والأموال الجرمية المهربة للخارج المستردة",
       "shortName": "قيمة الأموال المستردة من الخارج",
       "nameEn": "Value of recovered criminal proceeds and funds smuggled abroad",
       "status": "available",
@@ -451,7 +451,7 @@
     {
       "id": "15.2",
       "axis": 7,
-      "name": "عدد المجرمين الفارّين من العدالة المتهمين بجرائم فساد",
+      "name": "عدد المجرمين الفارِّين من العدالة المتهمين بجرائم فساد",
       "shortName": "الفارّون من العدالة",
       "nameEn": "Number of fugitives from justice charged with corruption offenses",
       "status": "available",
@@ -486,7 +486,7 @@
     {
       "id": "17.2",
       "axis": 7,
-      "name": "نسبة الموقوفين على ذمة التحقيق في قضايا فساد",
+      "name": "نسبة الموقوفين على ذمة التحقيق بقضايا الفساد",
       "shortName": "الموقوفون على ذمة التحقيق",
       "nameEn": "Percentage of persons held in pretrial detention in corruption cases",
       "status": "unavailable",
@@ -501,7 +501,7 @@
     {
       "id": "18.2",
       "axis": 8,
-      "name": "عدد طلبات الحماية الواردة للهيئة",
+      "name": "طلبات الحماية الواردة للهيئة",
       "shortName": "طلبات الحماية الواردة",
       "nameEn": "Number of protection requests received by the Commission",
       "status": "available",
@@ -529,7 +529,7 @@
     {
       "id": "20.2",
       "axis": 8,
-      "name": "عدد طلبات الحماية التي تمت المتابعة عليها",
+      "name": "عدد طلبات الحماية التي تم المتابعة عليها",
       "shortName": "طلبات الحماية التي جرت متابعتها",
       "nameEn": "Number of protection requests that were followed up",
       "status": "unavailable",
@@ -558,7 +558,7 @@
     {
       "id": "22.2",
       "axis": 9,
-      "name": "إقرارات الذمة المالية الموزعة على المكلفين في الجهات الخاضعة",
+      "name": "إقرارات الذمة المالية الموزعة على المكلفين في الجهات الخاضعة.",
       "shortName": "الإقرارات الموزعة",
       "nameEn": "Financial disclosure statements distributed to obligated persons in covered entities",
       "status": "available",
@@ -575,7 +575,7 @@
     {
       "id": "23.2",
       "axis": 9,
-      "name": "نسبة إقرارات الذمة المالية المستوفاة",
+      "name": "نسبة اقرارات الذمة المالية المستوفاة",
       "shortName": "نسبة الإقرارات المستوفاة",
       "nameEn": "Percentage of completed financial disclosure statements",
       "status": "unavailable",
@@ -590,7 +590,7 @@
     {
       "id": "24.2",
       "axis": 9,
-      "name": "عدد الأشخاص الذين فُضّ إقرار الذمة المالية المرتبط بهم لأغراض الفحص",
+      "name": "عدد الأشخاص الذين تم فض إقرار الذمة المالية المرتبط بهم لأغراض الفحص حسب السبب",
       "shortName": "الأشخاص الذين فُضّت إقراراتهم للفحص",
       "nameEn": "Number of persons whose financial disclosure statements were unsealed for examination",
       "status": "available",
@@ -606,7 +606,7 @@
     {
       "id": "25.2",
       "axis": 9,
-      "name": "نسبة إقرارات الذمة المالية التي فُضّت لأغراض الفحص الدوري",
+      "name": "نسبة إقرارات الذمة المالية التي تم فضها لأغراض الفحص الدوري",
       "shortName": "نسبة فض الإقرارات للفحص الدوري",
       "nameEn": "Percentage of financial disclosure statements unsealed for periodic examination",
       "status": "unavailable",
@@ -621,7 +621,7 @@
     {
       "id": "26.2",
       "axis": 10,
-      "name": "نسبة الأشخاص الذين اتصلوا بمسؤول حكومي ودفعوا رشوة أو طُلبت منهم خلال الأشهر الاثني عشر السابقة (SDG 16.5.1)",
+      "name": "نسبة الأشخاص الذين اتصلوا مرة واحدة على الأقل بمسؤول حكومي ودفعوا رشوة لمسؤول حكومي، أو طُلب منهم أولئك المسؤولون الحكوميون دفع رشوة، خلال الاثني عشر شهرا السابقة (SDGs 16.5.1)",
       "shortName": "نسبة من دفعوا رشوة أو طُلبت منهم (مسح)",
       "nameEn": "Percentage of persons who contacted a government official and paid a bribe or were asked to pay a bribe in the preceding 12 months (SDG 16.5.1)",
       "status": "partial",
@@ -651,7 +651,7 @@
     {
       "id": "28.2",
       "axis": 10,
-      "name": "نسبة المحامين في قضايا فساد",
+      "name": "نسبة المحامون في قضايا فساد",
       "shortName": "نسبة المحامين في قضايا الفساد",
       "nameEn": "Ratio of lawyers in corruption cases",
       "status": "unavailable",
